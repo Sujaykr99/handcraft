@@ -2,125 +2,71 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { apiRequest } from '../../lib/api'
+import { useApp } from '../../context/AppContext'
+
+const C = { serif: "'Newsreader', Georgia, serif", sans: "'Plus Jakarta Sans', sans-serif", primary: '#9f402d', primaryLight: '#e2725b', surface: '#fff8f1', surfaceDim: '#ede7df', onSurface: '#1e1b17', muted: '#6b6560' }
 
 export default function Signup() {
+  const { setUser, showToast, darkMode } = useApp()
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'buyer' })
-  const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const dm = darkMode
+  const bg = dm ? '#1a1410' : C.surface
+  const cardBg = dm ? '#2a2218' : '#ffffff'
+  const text = dm ? '#fff8f1' : C.onSurface
+  const muted = dm ? '#b5a898' : C.muted
+  const inputBg = dm ? '#211c16' : C.surfaceDim
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError('')
-
+    e.preventDefault(); setLoading(true)
     try {
-     const data = await apiRequest('/api/auth/signup', 'POST', form as any)
+      const data = await apiRequest('/api/auth/signup', 'POST', form as any)
       localStorage.setItem('token', data.token)
-      localStorage.setItem('user', JSON.stringify({
-        _id: data._id,
-        name: data.name,
-        email: data.email,
-        role: data.role
-      }))
+      setUser({ _id: data._id, name: data.name, email: data.email, role: data.role })
+      showToast(`Welcome, ${data.name.split(' ')[0]}!`)
       window.location.href = data.role === 'seller' ? '/dashboard' : '/'
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err: any) { showToast(err.message, 'error') }
+    finally { setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Create account</h1>
-        <p className="text-gray-500 mb-6">Join HandArt today</p>
-
-        {error && (
-          <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg mb-4">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Your name"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="you@example.com"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Min 6 characters"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">I want to</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, role: 'buyer' })}
-                className={`py-3 rounded-lg border-2 font-medium transition-colors ${
-                  form.role === 'buyer'
-                    ? 'border-orange-600 bg-orange-50 text-orange-600'
-                    : 'border-gray-200 text-gray-600'
-                }`}
-              >
-                Buy Crafts
-              </button>
-              <button
-                type="button"
-                onClick={() => setForm({ ...form, role: 'seller' })}
-                className={`py-3 rounded-lg border-2 font-medium transition-colors ${
-                  form.role === 'seller'
-                    ? 'border-orange-600 bg-orange-50 text-orange-600'
-                    : 'border-gray-200 text-gray-600'
-                }`}
-              >
-                Sell Crafts
-              </button>
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6rem 2rem' }}>
+      <div style={{ width: '100%', maxWidth: '440px' }}>
+        <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: '0.75rem', textAlign: 'center' }}>Join HandArt</p>
+        <h1 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '2.5rem', fontWeight: 400, color: text, marginBottom: '0.5rem', textAlign: 'center' }}>Create Account</h1>
+        <p style={{ fontFamily: C.sans, fontSize: '0.82rem', color: muted, textAlign: 'center', marginBottom: '2.5rem' }}>Be part of the artisan community</p>
+        <div style={{ background: cardBg, borderRadius: '1.25rem', padding: '2.5rem', boxShadow: '0 8px 40px rgba(30,27,23,0.07)' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {[
+              { label: 'Full Name', key: 'name', type: 'text', ph: 'Your name' },
+              { label: 'Email', key: 'email', type: 'email', ph: 'you@example.com' },
+              { label: 'Password', key: 'password', type: 'password', ph: 'Min 6 characters' },
+            ].map(f => (
+              <div key={f.key}>
+                <label style={{ fontFamily: C.sans, fontSize: '0.78rem', fontWeight: 500, color: text, display: 'block', marginBottom: '0.5rem' }}>{f.label}</label>
+                <input type={f.type} value={(form as any)[f.key]} onChange={e => setForm({ ...form, [f.key]: e.target.value })} placeholder={f.ph} required
+                  style={{ width: '100%', background: inputBg, border: 'none', borderRadius: '0.75rem', padding: '0.875rem 1.1rem', fontFamily: C.sans, fontSize: '0.875rem', color: text, outline: 'none' }} />
+              </div>
+            ))}
+            <div>
+              <label style={{ fontFamily: C.sans, fontSize: '0.78rem', fontWeight: 500, color: text, display: 'block', marginBottom: '0.75rem' }}>I want to</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                {[{ val: 'buyer', label: 'Buy Crafts' }, { val: 'seller', label: 'Sell Crafts' }].map(opt => (
+                  <button key={opt.val} type="button" onClick={() => setForm({ ...form, role: opt.val })}
+                    style={{ padding: '0.875rem', borderRadius: '0.75rem', fontFamily: C.sans, fontSize: '0.85rem', fontWeight: 500, cursor: 'pointer', transition: 'all 0.2s', background: form.role === opt.val ? `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})` : inputBg, color: form.role === opt.val ? 'white' : muted, border: 'none' }}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-orange-600 text-white py-3 rounded-lg font-medium hover:bg-orange-700 disabled:opacity-50"
-          >
-            {loading ? 'Creating account...' : 'Create Account'}
-          </button>
-        </form>
-
-        <p className="text-center text-gray-600 mt-6">
+            <button type="submit" disabled={loading} style={{ marginTop: '0.5rem', padding: '1rem', borderRadius: '9999px', border: 'none', cursor: loading ? 'not-allowed' : 'pointer', fontFamily: C.sans, fontSize: '0.9rem', fontWeight: 600, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: 'white', opacity: loading ? 0.7 : 1 }}>
+              {loading ? 'Creating...' : 'Create Account'}
+            </button>
+          </form>
+        </div>
+        <p style={{ textAlign: 'center', fontFamily: C.sans, fontSize: '0.82rem', color: muted, marginTop: '1.5rem' }}>
           Already have an account?{' '}
-          <Link href="/login" className="text-orange-600 font-medium hover:underline">
-            Login
-          </Link>
+          <Link href="/login" style={{ color: C.primary, fontWeight: 500 }}>Sign in →</Link>
         </p>
       </div>
     </div>

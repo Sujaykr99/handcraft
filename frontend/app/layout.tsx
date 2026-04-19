@@ -1,4 +1,5 @@
 import './globals.css'
+import { AppProvider } from '../context/AppContext'
 import Navbar from '../components/Navbar'
 
 export const metadata = {
@@ -12,11 +13,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;1,300;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;1,6..72,300;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
       </head>
-      <body style={{ margin: 0, padding: 0, background: '#fff8f1', fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-        <Navbar />
-        <main>{children}</main>
+      <body>
+        <AppProvider>
+          <Navbar />
+          {children}
+        </AppProvider>
       </body>
     </html>
   )

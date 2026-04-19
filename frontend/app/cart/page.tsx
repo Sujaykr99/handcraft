@@ -1,108 +1,89 @@
 'use client'
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { getCart, removeFromCart, getCartTotal } from '../../lib/cart'
+import { useApp } from '../../context/AppContext'
+
+const C = {
+  serif: "'Newsreader', Georgia, serif",
+  sans: "'Plus Jakarta Sans', sans-serif",
+  primary: '#9f402d',
+  primaryLight: '#e2725b',
+  surface: '#fff8f1',
+  surfaceLow: '#faf2ea',
+  surfaceDim: '#ede7df',
+  onSurface: '#1e1b17',
+  muted: '#6b6560',
+}
 
 export default function Cart() {
-  const [cart, setCart] = useState<any[]>([])
+  const { cart, removeFromCart, cartTotal, darkMode } = useApp()
+  const dm = darkMode
+  const bg = dm ? '#1a1410' : C.surface
+  const cardBg = dm ? '#2a2218' : '#ffffff'
+  const text = dm ? '#fff8f1' : C.onSurface
+  const muted = dm ? '#b5a898' : C.muted
+  const sideBg = dm ? '#211c16' : C.surfaceLow
 
-  useEffect(() => {
-    setCart(getCart())
-  }, [])
-
-  const handleRemove = (productId: string) => {
-    const updated = removeFromCart(productId)
-    setCart(updated)
-  }
-
-  if (cart.length === 0) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-6xl mb-4">🛒</p>
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Your cart is empty</h2>
-        <p className="text-gray-500 mb-6">Add some handmade items to get started</p>
-        <Link
-          href="/products"
-          className="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700"
-        >
-          Browse Products
-        </Link>
-      </div>
-    )
-  }
+  if (cart.length === 0) return (
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.25rem' }}>
+      <p style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '3.5rem', color: 'rgba(30,27,23,0.15)' }}>∅</p>
+      <h2 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '2rem', fontWeight: 400, color: text }}>Your collection is empty</h2>
+      <p style={{ fontFamily: C.sans, fontSize: '0.85rem', color: muted }}>Browse our handmade artifacts and add some to your bag</p>
+      <Link href="/products" style={{ fontFamily: C.sans, fontSize: '0.85rem', fontWeight: 500, background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: 'white', borderRadius: '9999px', padding: '0.875rem 2.25rem', display: 'inline-block', marginTop: '0.5rem' }}>
+        Browse Collection
+      </Link>
+    </div>
+  )
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">Your Cart</h1>
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', padding: '6rem 5rem 4rem' }}>
+      <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: '0.5rem' }}>
+        Your Selection
+      </p>
+      <h1 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '2.75rem', fontWeight: 400, color: text, marginBottom: '3rem' }}>
+        The Collection Cart
+      </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-
-        {/* Cart Items */}
-        <div className="md:col-span-2 space-y-4">
-          {cart.map((item: any) => (
-            <div
-              key={item._id}
-              className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex gap-4"
-            >
-              <div className="bg-orange-50 rounded-lg w-20 h-20 flex items-center justify-center flex-shrink-0">
-                {item.image ? (
-                  <img src={item.image} alt={item.title} className="w-full h-full object-cover rounded-lg" />
-                ) : (
-                  <span className="text-3xl">🏺</span>
-                )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2.5rem', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {cart.map(item => (
+            <div key={item._id} style={{ background: cardBg, borderRadius: '1rem', padding: '1.5rem', display: 'flex', gap: '1.5rem', boxShadow: '0 4px 20px rgba(30,27,23,0.05)' }}>
+              <div style={{ width: '100px', height: '100px', borderRadius: '0.875rem', overflow: 'hidden', flexShrink: 0 }}>
+                <img src={item.image || 'https://images.unsplash.com/photo-1493106641515-6b5631de4bb9?w=200&q=80'} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-800">{item.title}</h3>
-                <p className="text-sm text-gray-500">{item.category}</p>
-                <p className="text-orange-600 font-bold">₹{item.price}</p>
-                <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: '0.3rem' }}>{item.category}</p>
+                <h3 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.15rem', fontWeight: 400, color: text, marginBottom: '0.2rem' }}>{item.title}</h3>
+                <p style={{ fontFamily: C.sans, fontSize: '0.73rem', color: muted, marginBottom: '0.75rem' }}>by {item.seller?.name || 'Artisan'}</p>
+                <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+                  <span style={{ fontFamily: C.sans, fontSize: '1rem', fontWeight: 600, color: text }}>₹{item.price}</span>
+                  <span style={{ fontFamily: C.sans, fontSize: '0.8rem', color: muted }}>× {item.quantity}</span>
+                  <span style={{ fontFamily: C.sans, fontSize: '1rem', fontWeight: 700, color: C.primary }}>₹{item.price * item.quantity}</span>
+                </div>
               </div>
-
-              <div className="flex flex-col justify-between items-end">
-                <p className="font-bold text-gray-800">₹{item.price * item.quantity}</p>
-                <button
-                  onClick={() => handleRemove(item._id)}
-                  className="text-red-500 hover:text-red-700 text-sm"
-                >
-                  Remove
-                </button>
-              </div>
+              <button onClick={() => removeFromCart(item._id)} style={{ fontFamily: C.sans, fontSize: '0.75rem', color: muted, background: 'none', border: 'none', cursor: 'pointer', alignSelf: 'flex-start', padding: 0 }}>
+                Remove
+              </button>
             </div>
           ))}
         </div>
 
-        {/* Order Summary */}
-        <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 h-fit">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
-
-          <div className="space-y-2 mb-4">
-            {cart.map((item: any) => (
-              <div key={item._id} className="flex justify-between text-sm text-gray-600">
-                <span>{item.title} x{item.quantity}</span>
-                <span>₹{item.price * item.quantity}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="border-t pt-4 mb-6">
-            <div className="flex justify-between font-bold text-lg">
-              <span>Total</span>
-              <span className="text-orange-600">₹{getCartTotal()}</span>
+        <div style={{ background: sideBg, borderRadius: '1rem', padding: '2rem', position: 'sticky', top: '96px' }}>
+          <h2 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.4rem', fontWeight: 400, color: text, marginBottom: '1.5rem' }}>Order Summary</h2>
+          {cart.map(item => (
+            <div key={item._id} style={{ display: 'flex', justifyContent: 'space-between', fontFamily: C.sans, fontSize: '0.82rem', color: muted, marginBottom: '0.5rem' }}>
+              <span>{item.title} ×{item.quantity}</span><span>₹{item.price * item.quantity}</span>
             </div>
+          ))}
+          <div style={{ borderTop: '1px solid rgba(30,27,23,0.08)', marginTop: '1rem', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontFamily: C.sans, fontWeight: 700, fontSize: '1.1rem', color: text }}>
+            <span>Total</span><span style={{ color: C.primary }}>₹{cartTotal}</span>
           </div>
-
-          <Link
-            href="/checkout"
-            className="block w-full bg-orange-600 text-white py-3 rounded-lg font-medium text-center hover:bg-orange-700"
-          >
-            Proceed to Checkout
+          <div style={{ marginTop: '1rem', padding: '0.875rem', background: 'rgba(159,64,45,0.06)', borderRadius: '0.75rem', fontFamily: C.sans, fontSize: '0.75rem', color: muted, display: 'flex', gap: '0.5rem' }}>
+            <span>🤝</span> Payment goes directly to artisan — zero commission
+          </div>
+          <Link href="/checkout" style={{ display: 'block', textAlign: 'center', background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`, color: 'white', padding: '1rem', borderRadius: '9999px', fontFamily: C.sans, fontWeight: 600, fontSize: '0.9rem', marginTop: '1.25rem' }}>
+            Proceed to Checkout →
           </Link>
-
-          <Link
-            href="/products"
-            className="block w-full text-center text-orange-600 mt-3 hover:underline"
-          >
+          <Link href="/products" style={{ display: 'block', textAlign: 'center', fontFamily: C.sans, fontSize: '0.82rem', color: muted, marginTop: '0.875rem' }}>
             Continue Shopping
           </Link>
         </div>
