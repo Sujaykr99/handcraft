@@ -3,85 +3,141 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { apiRequest } from '../../../lib/api'
+import { useApp } from '../../../context/AppContext'
+
+const C = {
+  serif: "'Newsreader', Georgia, serif",
+  sans: "'Plus Jakarta Sans', sans-serif",
+  primary: '#9f402d',
+  primaryLight: '#e2725b',
+  surface: '#fff8f1',
+  surfaceLow: '#faf2ea',
+  surfaceDim: '#ede7df',
+  onSurface: '#1e1b17',
+  muted: '#6b6560',
+}
 
 export default function OrderConfirmation() {
   const { id } = useParams()
+  const { darkMode } = useApp()
   const [order, setOrder] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+
+  const dm = darkMode
+  const bg = dm ? '#1a1410' : C.surface
+  const cardBg = dm ? '#2a2218' : '#ffffff'
+  const text = dm ? '#fff8f1' : C.onSurface
+  const muted = dm ? '#b5a898' : C.muted
+  const sideBg = dm ? '#211c16' : C.surfaceLow
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
         const token = localStorage.getItem('token') || ''
-      const data = await apiRequest(`/api/orders/${id}`, 'GET', undefined as any, token)
+        const data = await apiRequest(`/api/orders/${id}`, 'GET', undefined as any, token)
         setOrder(data)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
+      } catch (e) { console.error(e) }
+      finally { setLoading(false) }
     }
     if (id) fetchOrder()
   }, [id])
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading order...</div>
-  if (!order) return <div className="text-center py-20 text-gray-500">Order not found</div>
+  if (loading) return (
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="skeleton" style={{ width: '400px', height: '300px' }} />
+    </div>
+  )
+
+  if (!order) return (
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <p style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.5rem', color: muted }}>Order not found</p>
+    </div>
+  )
 
   return (
-    <div className="max-w-2xl mx-auto px-6 py-10 text-center">
-      <div className="text-6xl mb-4">🎉</div>
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Order Placed!</h1>
-      <p className="text-gray-500 mb-8">
-        Thank you! Your order has been placed successfully.
-      </p>
+    <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6rem 2rem' }}>
+      <div style={{ maxWidth: '600px', width: '100%', textAlign: 'center' }}>
 
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 text-left mb-6">
-        <h2 className="text-lg font-bold text-gray-800 mb-4">Order Details</h2>
-        <div className="space-y-2 text-sm text-gray-600">
-          <div className="flex justify-between">
-            <span>Order ID</span>
-            <span className="font-mono text-xs">{order._id}</span>
+        {/* Success icon */}
+        <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(90,122,74,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 2rem', fontSize: '2.5rem' }}>
+          ✓
+        </div>
+
+        <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing: '0.18em', textTransform: 'uppercase', color: C.primary, marginBottom: '0.75rem' }}>
+          Order Confirmed
+        </p>
+        <h1 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '2.75rem', fontWeight: 400, color: text, marginBottom: '0.75rem' }}>
+          Thank you!
+        </h1>
+        <p style={{ fontFamily: C.sans, fontSize: '0.9rem', color: muted, marginBottom: '2.5rem', lineHeight: 1.7 }}>
+          Your order has been placed. The artisan will begin crafting your piece and ship it directly to you.
+        </p>
+
+        {/* Order details */}
+        <div style={{ background: cardBg, borderRadius: '1.25rem', padding: '2rem', boxShadow: '0 8px 40px rgba(30,27,23,0.07)', marginBottom: '1.5rem', textAlign: 'left' }}>
+          <h2 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.2rem', fontWeight: 400, color: text, marginBottom: '1.25rem' }}>
+            Order Details
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.25rem' }}>
+            {[
+              { label: 'Order ID', value: `#${order._id.slice(-8).toUpperCase()}` },
+              { label: 'Status', value: order.status.charAt(0).toUpperCase() + order.status.slice(1) },
+              { label: 'Artisan', value: order.seller?.name || 'Handmade Artisan' },
+              { label: 'Total', value: `₹${order.totalAmount}` },
+            ].map(item => (
+              <div key={item.label} style={{ display: 'flex', justifyContent: 'space-between', fontFamily: C.sans, fontSize: '0.85rem' }}>
+                <span style={{ color: muted }}>{item.label}</span>
+                <span style={{ color: item.label === 'Total' ? C.primary : text, fontWeight: item.label === 'Total' ? 700 : 500 }}>
+                  {item.value}
+                </span>
+              </div>
+            ))}
           </div>
-          <div className="flex justify-between">
-            <span>Status</span>
-            <span className="capitalize font-medium text-orange-600">{order.status}</span>
+
+          <div style={{ borderTop: '1px solid rgba(30,27,23,0.08)', paddingTop: '1.25rem' }}>
+            <p style={{ fontFamily: C.sans, fontSize: '0.75rem', color: muted, marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Items</p>
+            {order.items?.map((item: any, i: number) => (
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontFamily: C.sans, fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+                <span style={{ color: text }}>{item.title} ×{item.quantity}</span>
+                <span style={{ color: muted }}>₹{item.price * item.quantity}</span>
+              </div>
+            ))}
           </div>
-          <div className="flex justify-between">
-            <span>Total Amount</span>
-            <span className="font-bold text-orange-600">₹{order.totalAmount}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Seller</span>
-            <span>{order.seller?.name}</span>
+
+          <div style={{ borderTop: '1px solid rgba(30,27,23,0.08)', paddingTop: '1.25rem', marginTop: '0.75rem' }}>
+            <p style={{ fontFamily: C.sans, fontSize: '0.75rem', color: muted, marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Shipping to</p>
+            <p style={{ fontFamily: C.sans, fontSize: '0.85rem', color: text }}>
+              {order.shippingAddress?.street}, {order.shippingAddress?.city}, {order.shippingAddress?.state} — {order.shippingAddress?.pincode}
+            </p>
           </div>
         </div>
 
-        <div className="border-t mt-4 pt-4">
-          <h3 className="font-medium text-gray-800 mb-2">Items</h3>
-          {order.items.map((item: any, i: number) => (
-            <div key={i} className="flex justify-between text-sm text-gray-600">
-              <span>{item.title} x{item.quantity}</span>
-              <span>₹{item.price * item.quantity}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="border-t mt-4 pt-4">
-          <h3 className="font-medium text-gray-800 mb-2">Shipping To</h3>
-          <p className="text-sm text-gray-600">
-            {order.shippingAddress?.street}, {order.shippingAddress?.city},
-            {order.shippingAddress?.state} - {order.shippingAddress?.pincode}
+        {/* Artisan note */}
+        <div style={{ background: sideBg, borderRadius: '1rem', padding: '1.5rem', marginBottom: '2rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start', textAlign: 'left' }}>
+          <span style={{ fontSize: '1.25rem' }}>🤝</span>
+          <p style={{ fontFamily: C.sans, fontSize: '0.82rem', color: muted, lineHeight: 1.65 }}>
+            Your payment has gone directly to <strong style={{ color: text }}>{order.seller?.name || 'the artisan'}</strong>. No platform cut. Thank you for supporting handmade craft.
           </p>
         </div>
-      </div>
 
-      <div className="flex gap-4 justify-center">
-        <Link
-          href="/products"
-          className="bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700"
-        >
-          Continue Shopping
-        </Link>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+          <Link href="/products" style={{
+            fontFamily: C.sans, fontSize: '0.875rem', fontWeight: 600,
+            background: `linear-gradient(135deg, ${C.primary}, ${C.primaryLight})`,
+            color: 'white', borderRadius: '9999px', padding: '0.875rem 2rem',
+            display: 'inline-block'
+          }}>
+            Continue Shopping
+          </Link>
+          <Link href="/" style={{
+            fontFamily: C.sans, fontSize: '0.875rem', fontWeight: 500,
+            border: `1.5px solid ${C.primary}`, color: C.primary,
+            borderRadius: '9999px', padding: '0.875rem 2rem',
+            display: 'inline-block', background: 'transparent'
+          }}>
+            Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   )

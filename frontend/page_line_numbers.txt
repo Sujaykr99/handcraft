@@ -1,0 +1,378 @@
+﻿
+Line Text                                                                      
+---- ----                                                                      
+   1 'use client'                                                              
+   2 import { useState, useEffect, useRef } from 'react'                       
+   3 import { useApp } from '../../context/AppContext'                         
+   4 import { apiRequest } from '../../lib/api'                                
+   5 import { useRouter } from 'next/navigation'                               
+   6 import Link from 'next/link'                                              
+   7                                                                           
+   8 const C = {                                                               
+   9   serif: "'Newsreader', Georgia, serif",                                  
+  10   sans: "'Plus Jakarta Sans', sans-serif",                                
+  11   primary: '#9f402d',                                                     
+  12   primaryLight: '#e2725b',                                                
+  13   surface: '#fff8f1',                                                     
+  14   surfaceLow: '#faf2ea',                                                  
+  15   surfaceDim: '#ede7df',                                                  
+  16   surfaceHigh: '#e8e1da',                                                 
+  17   onSurface: '#1e1b17',                                                   
+  18   muted: '#6b6560',                                                       
+  19 }                                                                         
+  20                                                                           
+  21 const categories = ['Pottery','Jewellery','Textiles','Paintings','Woodw...
+  22 const emptyForm = { title: '', description: '', price: '', category: 'P...
+  23                                                                           
+  24 export default function Dashboard() {                                     
+  25   const { user, showToast, darkMode } = useApp()                          
+  26   const router = useRouter()                                              
+  27   const [products, setProducts] = useState<any[]>([])                     
+  28   const [orders, setOrders] = useState<any[]>([])                         
+  29   const [loading, setLoading] = useState(true)                            
+  30   const [showForm, setShowForm] = useState(false)                         
+  31   const [form, setForm] = useState(emptyForm)                             
+  32   const [editId, setEditId] = useState<string|null>(null)                 
+  33   const [submitting, setSubmitting] = useState(false)                     
+  34   const [uploading, setUploading] = useState(false)                       
+  35   const [preview, setPreview] = useState('')                              
+  36   const [activeTab, setActiveTab] = useState<'products'|'orders'>('prod...
+  37   const fileRef = useRef<HTMLInputElement>(null)                          
+  38                                                                           
+  39   const dm = darkMode                                                     
+  40   const bg = dm ? '#1a1410' : C.surface                                   
+  41   const sideBg = dm ? '#211c16' : C.surfaceLow                            
+  42   const cardBg = dm ? '#2a2218' : '#ffffff'                               
+  43   const text = dm ? '#fff8f1' : C.onSurface                               
+  44   const muted = dm ? '#b5a898' : C.muted                                  
+  45   const inputBg = dm ? '#1a1410' : C.surfaceDim                           
+  46                                                                           
+  47   useEffect(() => {                                                       
+  48     if (!user) { router.push('/login'); return }                          
+  49     if (user.role !== 'seller') { router.push('/'); return }              
+  50     fetchProducts()                                                       
+  51     fetchOrders()                                                         
+  52   }, [user])                                                              
+  53                                                                           
+  54   const getToken = () => localStorage.getItem('token') || ''              
+  55                                                                           
+  56   const fetchProducts = async () => {                                     
+  57     try {                                                                 
+  58       const data = await apiRequest('/api/products/seller/my', 'GET', u...
+  59       setProducts(data)                                                   
+  60     } catch (e) { console.error(e) }                                      
+  61     finally { setLoading(false) }                                         
+  62   }                                                                       
+  63                                                                           
+  64   const fetchOrders = async () => {                                       
+  65     try {                                                                 
+  66       const data = await apiRequest('/api/orders/seller', 'GET', undefi...
+  67       setOrders(data)                                                     
+  68     } catch (e) { console.error(e) }                                      
+  69   }                                                                       
+  70                                                                           
+  71   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElemen...
+  72     const file = e.target.files?.[0]                                      
+  73     if (!file) return                                                     
+  74     setUploading(true)                                                    
+  75     try {                                                                 
+  76       const fd = new FormData()                                           
+  77       fd.append('image', file)                                            
+  78       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/p...
+  79         method: 'POST',                                                   
+  80         headers: { Authorization: `Bearer ${getToken()}` },               
+  81         body: fd                                                          
+  82       })                                                                  
+  83       const data = await res.json()                                       
+  84       if (!res.ok) throw new Error(data.message)                          
+  85       setForm(prev => ({ ...prev, image: data.url }))                     
+  86       setPreview(data.url)                                                
+  87       showToast('Photo uploaded!')                                        
+  88     } catch (err: any) {                                                  
+  89       showToast(err.message, 'error')                                     
+  90     } finally { setUploading(false) }                                     
+  91   }                                                                       
+  92                                                                           
+  93   const handleSubmit = async (e: React.FormEvent) => {                    
+  94     e.preventDefault()                                                    
+  95     setSubmitting(true)                                                   
+  96     try {                                                                 
+  97       const payload = { ...form, price: Number(form.price), stock: Numb...
+  98       if (editId) {                                                       
+  99         await apiRequest(`/api/products/${editId}`, 'PUT', payload as a...
+ 100         showToast('Product updated')                                      
+ 101       } else {                                                            
+ 102         await apiRequest('/api/products', 'POST', payload as any, getTo...
+ 103         showToast('Product listed!')                                      
+ 104       }                                                                   
+ 105       setForm(emptyForm); setPreview(''); setEditId(null); setShowForm(...
+ 106       fetchProducts()                                                     
+ 107     } catch (err: any) { showToast(err.message, 'error') }                
+ 108     finally { setSubmitting(false) }                                      
+ 109   }                                                                       
+ 110                                                                           
+ 111   const handleEdit = (product: any) => {                                  
+ 112     setForm({ title: product.title, description: product.description, p...
+ 113     setPreview(product.image || '')                                       
+ 114     setEditId(product._id)                                                
+ 115     setShowForm(true)                                                     
+ 116     window.scrollTo({ top: 0, behavior: 'smooth' })                       
+ 117   }                                                                       
+ 118                                                                           
+ 119   const handleDelete = async (id: string) => {                            
+ 120     if (!confirm('Remove this product?')) return                          
+ 121     try {                                                                 
+ 122       await apiRequest(`/api/products/${id}`, 'DELETE', undefined as an...
+ 123       showToast('Product removed', 'info')                                
+ 124       fetchProducts()                                                     
+ 125     } catch (err: any) { showToast(err.message, 'error') }                
+ 126   }                                                                       
+ 127                                                                           
+ 128   const updateOrderStatus = async (orderId: string, status: string) => {  
+ 129     try {                                                                 
+ 130       await apiRequest(`/api/orders/${orderId}/status`, 'PUT', { status...
+ 131       showToast('Order updated')                                          
+ 132       fetchOrders()                                                       
+ 133     } catch (err: any) { showToast(err.message, 'error') }                
+ 134   }                                                                       
+ 135                                                                           
+ 136   const totalRevenue = orders                                             
+ 137     .filter(o => o.status === 'paid' || o.status === 'delivered')         
+ 138     .reduce((s, o) => s + o.totalAmount, 0)                               
+ 139                                                                           
+ 140   return (                                                                
+ 141     <div style={{ background: bg, minHeight: '100vh', paddingTop: '80px...
+ 142                                                                           
+ 143       {/* Sidebar */}                                                     
+ 144       <aside style={{ width: '220px', flexShrink: 0, background: sideBg...
+ 145         <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing...
+ 146           Artisan Studio                                                  
+ 147         </p>                                                              
+ 148         {[{ key: 'products', label: 'My Products' }, { key: 'orders', l...
+ 149           <div key={tab.key} onClick={() => setActiveTab(tab.key as any...
+ 150             <span style={{ fontFamily: C.sans, fontSize: '0.85rem', fon...
+ 151               {tab.label}                                                 
+ 152             </span>                                                       
+ 153           </div>                                                          
+ 154         ))}                                                               
+ 155         <div style={{ marginTop: 'auto', paddingTop: '2rem', borderTop:...
+ 156           <Link href="/products" style={{ fontFamily: C.sans, fontSize:...
+ 157         </div>                                                            
+ 158       </aside>                                                            
+ 159                                                                           
+ 160       {/* Main content */}                                                
+ 161       <div style={{ flex: 1, padding: '2.5rem 3rem' }}>                   
+ 162                                                                           
+ 163         {/* Header */}                                                    
+ 164         <div style={{ display: 'flex', justifyContent: 'space-between',...
+ 165           <div>                                                           
+ 166             <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpa...
+ 167             <h1 style={{ fontFamily: C.serif, fontStyle: 'italic', font...
+ 168               {user?.name?.split(' ')[0]}'s Studio                        
+ 169             </h1>                                                         
+ 170           </div>                                                          
+ 171           {activeTab === 'products' && (                                  
+ 172             <button onClick={() => { setShowForm(!showForm); setForm(em...
+ 173               style={{ fontFamily: C.sans, fontSize: '0.85rem', fontWei...
+ 174               {showForm ? 'âœ• Cancel' : '+ List New Product'}            
+ 175             </button>                                                     
+ 176           )}                                                              
+ 177         </div>                                                            
+ 178                                                                           
+ 179         {/* Stats */}                                                     
+ 180         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, ...
+ 181           {[                                                              
+ 182             { label: 'Total Products', value: String(products.length) },  
+ 183             { label: 'Total Orders', value: String(orders.length) },      
+ 184             { label: 'Revenue', value: `â‚¹${totalRevenue.toLocaleStrin...
+ 185           ].map(stat => (                                                 
+ 186             <div key={stat.label} style={{ background: cardBg, borderRa...
+ 187               <p style={{ fontFamily: C.sans, fontSize: '0.75rem', colo...
+ 188               <p style={{ fontFamily: C.serif, fontStyle: 'italic', fon...
+ 189             </div>                                                        
+ 190           ))}                                                             
+ 191         </div>                                                            
+ 192                                                                           
+ 193         {/* Product Form */}                                              
+ 194         {showForm && activeTab === 'products' && (                        
+ 195           <div style={{ background: cardBg, borderRadius: '1.25rem', pa...
+ 196             <h2 style={{ fontFamily: C.serif, fontStyle: 'italic', font...
+ 197               {editId ? 'Edit Product' : 'List New Product'}              
+ 198             </h2>                                                         
+ 199             <form onSubmit={handleSubmit}>                                
+ 200               <div style={{ display: 'grid', gridTemplateColumns: '1fr ...
+ 201                                                                           
+ 202                 {/* Image upload */}                                      
+ 203                 <div style={{ gridColumn: '1 / -1' }}>                    
+ 204                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 205                   <div style={{ display: 'flex', gap: '1.5rem', alignIt...
+ 206                     <div onClick={() => fileRef.current?.click()} style...
+ 207                       {preview ? (                                        
+ 208                         <img src={preview} alt="preview" style={{ width...
+ 209                       ) : (                                               
+ 210                         <div style={{ textAlign: 'center' }}>             
+ 211                           <p style={{ fontSize: '2rem', marginBottom: '...
+ 212                           <p style={{ fontFamily: C.sans, fontSize: '0....
+ 213                         </div>                                            
+ 214                       )}                                                  
+ 215                       {uploading && (                                     
+ 216                         <div style={{ position: 'absolute', inset: 0, b...
+ 217                           <p style={{ fontFamily: C.sans, fontSize: '0....
+ 218                         </div>                                            
+ 219                       )}                                                  
+ 220                     </div>                                                
+ 221                     <div>                                                 
+ 222                       <p style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 223                       <button type="button" onClick={() => fileRef.curr...
+ 224                         {preview ? 'Change Photo' : 'Choose Photo'}       
+ 225                       </button>                                           
+ 226                       <input ref={fileRef} type="file" accept="image/*"...
+ 227                     </div>                                                
+ 228                   </div>                                                  
+ 229                 </div>                                                    
+ 230                                                                           
+ 231                 {/* Title */}                                             
+ 232                 <div>                                                     
+ 233                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 234                   <input value={form.title} onChange={e => setForm({ .....
+ 235                     style={{ width: '100%', background: inputBg, border...
+ 236                 </div>                                                    
+ 237                                                                           
+ 238                 {/* Category */}                                          
+ 239                 <div>                                                     
+ 240                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 241                   <select value={form.category} onChange={e => setForm(...
+ 242                     style={{ width: '100%', background: inputBg, border...
+ 243                     {categories.map(c => <option key={c} value={c}>{c}<...
+ 244                   </select>                                               
+ 245                 </div>                                                    
+ 246                                                                           
+ 247                 {/* Price */}                                             
+ 248                 <div>                                                     
+ 249                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 250                   <input type="number" value={form.price} onChange={e =...
+ 251                     style={{ width: '100%', background: inputBg, border...
+ 252                 </div>                                                    
+ 253                                                                           
+ 254                 {/* Stock */}                                             
+ 255                 <div>                                                     
+ 256                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 257                   <input type="number" value={form.stock} onChange={e =...
+ 258                     style={{ width: '100%', background: inputBg, border...
+ 259                 </div>                                                    
+ 260                                                                           
+ 261                 {/* Description */}                                       
+ 262                 <div style={{ gridColumn: '1 / -1' }}>                    
+ 263                   <label style={{ fontFamily: C.sans, fontSize: '0.78re...
+ 264                   <textarea value={form.description} onChange={e => set...
+ 265                     style={{ width: '100%', background: inputBg, border...
+ 266                 </div>                                                    
+ 267               </div>                                                      
+ 268                                                                           
+ 269               <div style={{ display: 'flex', gap: '1rem', marginTop: '2...
+ 270                 <button type="submit" disabled={submitting || uploading}  
+ 271                   style={{ padding: '0.9rem 2.5rem', borderRadius: '999...
+ 272                   {submitting ? 'Saving...' : editId ? 'Save Changes' :...
+ 273                 </button>                                                 
+ 274                 <button type="button" onClick={() => { setShowForm(fals...
+ 275                   style={{ padding: '0.9rem 1.75rem', borderRadius: '99...
+ 276                   Cancel                                                  
+ 277                 </button>                                                 
+ 278               </div>                                                      
+ 279             </form>                                                       
+ 280           </div>                                                          
+ 281         )}                                                                
+ 282                                                                           
+ 283         {/* Products grid */}                                             
+ 284         {activeTab === 'products' && (                                    
+ 285           <div>                                                           
+ 286             {loading ? (                                                  
+ 287               <div style={{ display: 'grid', gridTemplateColumns: 'repe...
+ 288                 {[...Array(4)].map((_, i) => <div key={i} className="sk...
+ 289               </div>                                                      
+ 290             ) : products.length === 0 ? (                                 
+ 291               <div style={{ textAlign: 'center', padding: '6rem 0', bac...
+ 292                 <p style={{ fontFamily: C.serif, fontStyle: 'italic', f...
+ 293                 <button onClick={() => setShowForm(true)} style={{ font...
+ 294                   + List Your First Product                               
+ 295                 </button>                                                 
+ 296               </div>                                                      
+ 297             ) : (                                                         
+ 298               <div style={{ display: 'grid', gridTemplateColumns: 'repe...
+ 299                 {products.map((product: any) => (                         
+ 300                   <div key={product._id} style={{ background: cardBg, b...
+ 301                     <div style={{ height: '200px', overflow: 'hidden', ...
+ 302                       <img src={product.image || 'https://images.unspla...
+ 303                       <div style={{ position: 'absolute', top: '10px', ...
+ 304                         <span style={{ fontFamily: C.sans, fontSize: '0...
+ 305                           {product.stock > 0 ? `${product.stock} in sto...
+ 306                         </span>                                           
+ 307                       </div>                                              
+ 308                     </div>                                                
+ 309                     <div style={{ padding: '1.1rem 1.25rem' }}>           
+ 310                       <p style={{ fontFamily: C.sans, fontSize: '10px',...
+ 311                       <h3 style={{ fontFamily: C.serif, fontStyle: 'ita...
+ 312                       <p style={{ fontFamily: C.sans, fontSize: '1rem',...
+ 313                       <div style={{ display: 'flex', gap: '0.75rem' }}>   
+ 314                         <button onClick={() => handleEdit(product)} sty...
+ 315                         <button onClick={() => handleDelete(product._id...
+ 316                       </div>                                              
+ 317                     </div>                                                
+ 318                   </div>                                                  
+ 319                 ))}                                                       
+ 320               </div>                                                      
+ 321             )}                                                            
+ 322           </div>                                                          
+ 323         )}                                                                
+ 324                                                                           
+ 325         {/* Orders list */}                                               
+ 326         {activeTab === 'orders' && (                                      
+ 327           <div style={{ display: 'flex', flexDirection: 'column', gap: ...
+ 328             {orders.length === 0 ? (                                      
+ 329               <div style={{ textAlign: 'center', padding: '6rem 0', bac...
+ 330                 <p style={{ fontFamily: C.serif, fontStyle: 'italic', f...
+ 331                 <p style={{ fontFamily: C.sans, fontSize: '0.85rem', co...
+ 332               </div>                                                      
+ 333             ) : orders.map((order: any) => (                              
+ 334               <div key={order._id} style={{ background: cardBg, borderR...
+ 335                 <div style={{ display: 'flex', justifyContent: 'space-b...
+ 336                   <div>                                                   
+ 337                     <p style={{ fontFamily: C.sans, fontSize: '10px', l...
+ 338                     <p style={{ fontFamily: 'monospace', fontSize: '0.7...
+ 339                   </div>                                                  
+ 340                   <div style={{ display: 'flex', alignItems: 'center', ...
+ 341                     <span style={{ fontFamily: C.sans, fontSize: '1rem'...
+ 342                     <select value={order.status} onChange={e => updateO...
+ 343                       style={{ fontFamily: C.sans, fontSize: '0.78rem',...
+ 344                       {['pending','paid','shipped','delivered','cancell...
+ 345                         <option key={s} value={s}>{s.charAt(0).toUpperC...
+ 346                       ))}                                                 
+ 347                     </select>                                             
+ 348                   </div>                                                  
+ 349                 </div>                                                    
+ 350                 <div style={{ display: 'flex', gap: '2rem' }}>            
+ 351                   <div>                                                   
+ 352                     <p style={{ fontFamily: C.sans, fontSize: '0.72rem'...
+ 353                     <p style={{ fontFamily: C.sans, fontSize: '0.85rem'...
+ 354                   </div>                                                  
+ 355                   <div>                                                   
+ 356                     <p style={{ fontFamily: C.sans, fontSize: '0.72rem'...
+ 357                     <p style={{ fontFamily: C.sans, fontSize: '0.85rem'...
+ 358                   </div>                                                  
+ 359                   <div>                                                   
+ 360                     <p style={{ fontFamily: C.sans, fontSize: '0.72rem'...
+ 361                     {order.items?.map((item: any, i: number) => (         
+ 362                       <p key={i} style={{ fontFamily: C.sans, fontSize:...
+ 363                     ))}                                                   
+ 364                   </div>                                                  
+ 365                 </div>                                                    
+ 366               </div>                                                      
+ 367             ))}                                                           
+ 368           </div>                                                          
+ 369         )}                                                                
+ 370       </div>                                                              
+ 371     </div>                                                                
+ 372   )                                                                       
+ 373 }                                                                         
+
+

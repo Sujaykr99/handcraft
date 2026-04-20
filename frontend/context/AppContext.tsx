@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 interface CartItem { _id: string; title: string; price: number; image: string; category: string; quantity: number; seller?: any }
 interface Toast { id: number; message: string; type: 'success'|'error'|'info' }
 interface Ctx {
-  cart: CartItem[]; addToCart: (p: any, qty?: number) => void; removeFromCart: (id: string) => void
+  cart: CartItem[]; addToCart: (p: any, qty?: number) => void; removeFromCart: (id: string) => void; clearCart: () => void
   cartCount: number; cartTotal: number
   user: any; setUser: (u: any) => void
   wishlist: string[]; toggleWishlist: (id: string) => void
@@ -49,6 +49,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCart(prev => { const u = prev.filter(i => i._id !== id); localStorage.setItem('cart', JSON.stringify(u)); return u })
     showToast('Removed from cart', 'info')
   }, [showToast])
+  const clearCart = () => {
+  setCart([])
+  localStorage.removeItem('cart')
+}
 
   const setUser = (u: any) => { setUserState(u); u ? localStorage.setItem('user', JSON.stringify(u)) : localStorage.removeItem('user') }
 
@@ -67,7 +71,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const cartTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0)
 
   return (
-    <AppContext.Provider value={{ cart, addToCart, removeFromCart, cartCount, cartTotal, user, setUser, wishlist, toggleWishlist, toasts, showToast, darkMode, toggleDarkMode }}>
+    <AppContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, cartCount, cartTotal, user, setUser, wishlist, toggleWishlist, toasts, showToast, darkMode, toggleDarkMode }}>
       {children}
       <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         {toasts.map(t => (
