@@ -107,6 +107,7 @@ export default function Home() {
               <h3 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.5rem', color: '#fff8f1', fontWeight: 400 }}>The Loom of Ancestors</h3>
             </div>
           </div>
+          
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div style={{ position: 'relative', borderRadius: '1rem', overflow: 'hidden', flex: 1 }}>
               <img src="https://images.unsplash.com/photo-1604578762246-41134e37f9cc?w=700&q=80" alt="Fired Earth" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s ease' }}
@@ -163,7 +164,7 @@ export default function Home() {
                 desc: 'Hand-woven using traditional indigo vat dyeing passed down four generations.'
               },
               {
-                img: 'https://images.unsplash.com/photo-1481009137526-5a453fdd1f65?w=600&q=80',
+                img: 'https://unsplash.com/photos/gold-steel-round-container-on-brown-wooden-table-0NJcGK9wBZg',
                 cat: 'Woodwork', artisan: 'Kaito Sato · Japan', title: 'Imperfection Vessel', price: '₹2,450',
                 desc: 'Salvaged cedar finished with real 24k gold lacquer joinery.'
               },
