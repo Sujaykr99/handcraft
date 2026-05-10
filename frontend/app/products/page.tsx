@@ -163,7 +163,9 @@ function ProductsContent() {
                   <div style={{ padding: '1.1rem 1.25rem 0.75rem' }}>
                     <p style={{ fontFamily: C.sans, fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: C.primary, marginBottom: '0.35rem' }}>{product.category}</p>
                     <h3 style={{ fontFamily: C.serif, fontStyle: 'italic', fontSize: '1.05rem', fontWeight: 400, color: text, marginBottom: '0.25rem', lineHeight: 1.3 }}>{product.title}</h3>
-                    <p style={{ fontFamily: C.sans, fontSize: '0.72rem', color: muted, marginBottom: '0.75rem' }}>by {product.seller?.name || 'Artisan'}</p>
+                    <Link href={`/artisans/${product.seller?._id}`} style={{ fontFamily: C.sans, fontSize: '0.72rem', color: C.primary, marginBottom: '0.75rem', display: 'block' }}>
+                      by {product.seller?.name || 'Artisan'} →
+                    </Link>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontFamily: C.sans, fontSize: '1rem', fontWeight: 600, color: text }}>₹{product.price}</span>
                       <span style={{ fontFamily: C.sans, fontSize: '0.7rem', color: product.stock > 0 ? '#5a7a4a' : C.primary, fontWeight: 600 }}>

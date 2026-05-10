@@ -66,12 +66,20 @@ export default function Navbar() {
         </Link>
 
         {user ? (
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            {user.role === 'seller' && <Link href="/dashboard" style={{ fontFamily: C.sans, fontSize: '0.75rem', color: dm ? 'rgba(255,248,241,0.6)' : '#6b6560' }}>Dashboard</Link>}
-            <button onClick={logout} style={{ fontFamily: C.sans, fontSize: '0.75rem', color: dm ? 'rgba(255,248,241,0.6)' : '#6b6560', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              {user.name?.split(' ')[0]}
-            </button>
-          </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+    {user.role === 'seller' ? (
+      <Link href="/dashboard" style={{ fontFamily: C.sans, fontSize: '0.75rem', color: dm ? 'rgba(255,248,241,0.6)' : '#6b6560' }}>
+        Studio
+      </Link>
+    ) : (
+      <Link href="/my-account" style={{ fontFamily: C.sans, fontSize: '0.75rem', color: dm ? 'rgba(255,248,241,0.6)' : '#6b6560' }}>
+        My Account
+      </Link>
+    )}
+    <button onClick={logout} style={{ fontFamily: C.sans, fontSize: '0.75rem', color: dm ? 'rgba(255,248,241,0.6)' : '#6b6560', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+      {user.name?.split(' ')[0]}
+    </button>
+  </div>
         ) : (
           <Link href="/login" style={{ display: 'flex', color: dm ? C.surface : C.onSurface }}>
             <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.4" viewBox="0 0 24 24">

@@ -1,26 +1,39 @@
 const jwt = require('jsonwebtoken')
 
 const protect = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1]
+  const authHeader = req.headers.authorization
 
-  if (!token) {
-    return res.status(401).json({ message: 'No token, access denied' })
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'No token — access denied' })
   }
+
+  const token = authHeader.split(' ')[1]
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     req.user = decoded
     next()
   } catch (error) {
-    res.status(401).json({ message: 'Invalid token' })
+    res.status(401).json({ message: 'Invalid or expired token' })
   }
 }
 
 const sellerOnly = (req, res, next) => {
   if (req.user.role !== 'seller') {
-    return res.status(403).json({ message: 'Sellers only' })
+    return res.status(403).json({
+      message: 'Access denied — sellers only'
+    })
   }
   next()
 }
 
-module.exports = { protect, sellerOnly }
+const buyerOnly = (req, res, next) => {
+  if (req.user.role !== 'buyer') {
+    return res.status(403).json({
+      message: 'Access denied — buyers only'
+    })
+  }
+  next()
+}
+
+module.exports = { protect, sellerOnly, buyerOnly }

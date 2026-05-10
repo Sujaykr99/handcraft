@@ -25,7 +25,11 @@ export default function Login() {
       localStorage.setItem('token', data.token)
       setUser({ _id: data._id, name: data.name, email: data.email, role: data.role })
       showToast(`Welcome back, ${data.name.split(' ')[0]}!`)
-      window.location.href = data.role === 'seller' ? '/dashboard' : '/'
+      if (data.role === 'seller') {
+        window.location.href = '/dashboard'
+      } else {
+        window.location.href = '/my-account'
+      }
     } catch (err: any) { showToast(err.message, 'error') }
     finally { setLoading(false) }
   }

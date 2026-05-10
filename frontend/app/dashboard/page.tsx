@@ -45,11 +45,13 @@ export default function Dashboard() {
   const inputBg = dm ? '#1a1410' : C.surfaceDim
 
   useEffect(() => {
-    if (!user) { router.push('/login'); return }
-    if (user.role !== 'seller') { router.push('/'); return }
-    fetchProducts()
-    fetchOrders()
-  }, [user])
+  const stored = localStorage.getItem('user')
+  if (!stored) { router.push('/login'); return }
+  const storedUser = JSON.parse(stored)
+  if (storedUser.role !== 'seller') { router.push('/'); return }
+  fetchProducts()
+  fetchOrders()
+}, [])
 
   const getToken = () => localStorage.getItem('token') || ''
 

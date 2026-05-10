@@ -49,11 +49,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setCart(prev => { const u = prev.filter(i => i._id !== id); localStorage.setItem('cart', JSON.stringify(u)); return u })
     showToast('Removed from cart', 'info')
   }, [showToast])
+
   const clearCart = () => {
   setCart([])
   localStorage.removeItem('cart')
 }
-
   const setUser = (u: any) => { setUserState(u); u ? localStorage.setItem('user', JSON.stringify(u)) : localStorage.removeItem('user') }
 
   const toggleWishlist = useCallback((id: string) => {

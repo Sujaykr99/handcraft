@@ -11,81 +11,155 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } })
-
-// Upload image
-router.post('/upload-image', protect, sellerOnly, upload.single('image'), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: 'No file uploaded' })
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'handart', transformation: [{ width: 800, quality: 'auto', fetch_format: 'auto' }] },
-        (error, result) => { if (error) reject(error); else resolve(result) }
-      )
-      stream.end(req.file.buffer)
-    })
-    res.json({ url: result.secure_url })
-  } catch (error) { res.status(500).json({ message: error.message }) }
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 }
 })
 
-// GET all products
+// ─── PUBLIC ROUTES (buyers can access) ───────────────────
+
+// GET /api/products — browse all products
 router.get('/', async (req, res) => {
   try {
     const { category, search } = req.query
     let filter = {}
     if (category) filter.category = category
     if (search) filter.title = { $regex: search, $options: 'i' }
-    const products = await Product.find(filter).populate('seller', 'name email').sort({ createdAt: -1 })
+
+    const products = await Product.find(filter)
+      .populate('seller', 'name email')
+      .sort({ createdAt: -1 })
+
     res.json(products)
-  } catch (error) { res.status(500).json({ message: error.message }) }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 })
 
-// GET seller's own products
-router.get('/seller/my', protect, sellerOnly, async (req, res) => {
-  try {
-    const products = await Product.find({ seller: req.user.id }).sort({ createdAt: -1 })
-    res.json(products)
-  } catch (error) { res.status(500).json({ message: error.message }) }
-})
-
-// GET single product
+// GET /api/products/:id — single product detail
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate('seller', 'name email')
-    if (!product) return res.status(404).json({ message: 'Product not found' })
+    const product = await Product.findById(req.params.id)
+      .populate('seller', 'name email')
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' })
+    }
     res.json(product)
-  } catch (error) { res.status(500).json({ message: error.message }) }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 })
 
-// POST create product
+// ─── SELLER ONLY ROUTES ───────────────────────────────────
+
+// POST /api/products/upload-image
+router.post('/upload-image', protect, sellerOnly, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
+
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'handart',
+          transformation: [{ width: 800, quality: 'auto', fetch_format: 'auto' }]
+        },
+        (error, result) => {
+          if (error) reject(error)
+          else resolve(result)
+        }
+      )
+      stream.end(req.file.buffer)
+    })
+
+    res.json({ url: result.secure_url })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// GET /api/products/seller/my — seller sees own products
+router.get('/seller/my', protect, sellerOnly, async (req, res) => {
+  try {
+    const products = await Product.find({ seller: req.user.id })
+      .sort({ createdAt: -1 })
+    res.json(products)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
+// POST /api/products — seller creates product
 router.post('/', protect, sellerOnly, async (req, res) => {
   try {
     const { title, description, price, category, image, stock, variants } = req.body
-    const product = await Product.create({ seller: req.user.id, title, description, price, category, image, stock, variants })
+
+    if (!title || !description || !price || !category) {
+      return res.status(400).json({ message: 'Title, description, price and category are required' })
+    }
+
+    const product = await Product.create({
+      seller: req.user.id,
+      title,
+      description,
+      price,
+      category,
+      image: image || '',
+      stock: stock || 0,
+      variants: variants || []
+    })
+
     res.status(201).json(product)
-  } catch (error) { res.status(500).json({ message: error.message }) }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 })
 
-// PUT update product
+// PUT /api/products/:id — seller edits own product
 router.put('/:id', protect, sellerOnly, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-    if (!product) return res.status(404).json({ message: 'Product not found' })
-    if (product.seller.toString() !== req.user.id) return res.status(403).json({ message: 'Not your product' })
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true })
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' })
+    }
+
+    if (product.seller.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only edit your own products' })
+    }
+
+    const updated = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    )
+
     res.json(updated)
-  } catch (error) { res.status(500).json({ message: error.message }) }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 })
 
-// DELETE product
+// DELETE /api/products/:id — seller deletes own product
 router.delete('/:id', protect, sellerOnly, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
-    if (!product) return res.status(404).json({ message: 'Product not found' })
-    if (product.seller.toString() !== req.user.id) return res.status(403).json({ message: 'Not your product' })
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' })
+    }
+
+    if (product.seller.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only delete your own products' })
+    }
+
     await product.deleteOne()
-    res.json({ message: 'Product deleted' })
-  } catch (error) { res.status(500).json({ message: error.message }) }
+    res.json({ message: 'Product deleted successfully' })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
 })
 
 module.exports = router
