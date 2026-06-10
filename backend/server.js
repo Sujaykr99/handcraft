@@ -8,8 +8,21 @@ connectDB()
 
 const app = express()
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://handcraft-mu.vercel.app',
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(origin => origin.trim()) : [])
+]
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+      return
+    }
+
+    callback(new Error('Not allowed by CORS'))
+  },
   credentials: true
 }))
 app.use(express.json())

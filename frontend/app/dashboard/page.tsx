@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { useApp } from '../../context/AppContext'
-import { apiRequest } from '../../lib/api'
+import { API_URL, apiRequest } from '../../lib/api'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -77,7 +77,7 @@ export default function Dashboard() {
     try {
       const fd = new FormData()
       fd.append('image', file)
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/products/upload-image`, {
+      const res = await fetch(`${API_URL}/api/products/upload-image`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${getToken()}` },
         body: fd
