@@ -1,10 +1,10 @@
-﻿# HandArt Marketplace ðŸ›ï¸
+﻿# HandArt Marketplace 🛍️
 
 [![Status](https://img.shields.io/badge/status-production-brightgreen)](https://github.com/) [![Frontend](https://img.shields.io/badge/frontend-Next.js-blue)](https://nextjs.org/) [![Backend](https://img.shields.io/badge/backend-Node.js-%23339933)](https://nodejs.org/) [![Database](https://img.shields.io/badge/database-MongoDB-%2347A248)](https://www.mongodb.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 > A polished artisan marketplace for buyers and sellers to discover handcrafted products, manage listings, and complete orders with modern full-stack web architecture.
 
-## ðŸ“Œ Project Overview
+## 📌 Project Overview
 
 HandArt Marketplace is a full-stack craft commerce platform built with a Next.js frontend and an Express/MongoDB backend. The application solves the problem of disconnected artisan commerce by providing:
 
@@ -13,7 +13,7 @@ HandArt Marketplace is a full-stack craft commerce platform built with a Next.js
 - order tracking and secure authentication
 - product search, wishlist, and cart flows
 
-## ðŸŽ¯ Why It Was Built
+## 🎯 Why It Was Built
 
 This project was built to demonstrate end-to-end full-stack skills, including:
 
@@ -22,25 +22,23 @@ This project was built to demonstrate end-to-end full-stack skills, including:
 - order management and checkout readiness
 - responsive UI design for portfolio and internship-ready presentation
 
-## ðŸ‘¥ Target Users
+## 👥 Target Users
 
 - Artisans and sellers who want to list handmade creations.
 - Buyers who seek curated craft products.
 - Recruiters reviewing modern full-stack development skills.
 - Product managers or designers evaluating marketplace UX.
 
-## ðŸŒ Live Demo
+## 🌐 Live Demo
 
 - Frontend deployment: `https://handcraft-mu.vercel.app/`
 - Backend API: `https://handart-backend.onrender.com`
 
-> Update these URLs after deployment.
+## 🖼️ Screenshots
 
-## ðŸ–¼ï¸ Screenshots
+![Homepage Preview](images/Screenshot%202026-06-10%20095835.png)
 
-![Homepage Preview](C:\Users\DELL\OneDrive\Pictures\Screenshots\Screenshot 2026-06-10 095835.png)
-
-## âœ¨ Key Features
+## ✨ Key Features
 
 - Buyer and seller authentication with JWT
 - Product browsing, search, category filters
@@ -51,11 +49,11 @@ This project was built to demonstrate end-to-end full-stack skills, including:
 - Responsive, mobile-friendly interface
 - Razorpay-ready payment integration support
 
-## ðŸ“± Mobile View
+## 📱 Mobile View
 
 The frontend layout is built with responsive styles and supports mobile devices. The navbar, hero section, product cards, cart, and account flows adapt to narrow screens.
 
-## ðŸ§‘â€ðŸ’» User Features
+## 🧑‍💻 User Features
 
 - Browse craft categories and product details
 - Search products by title and filter by category
@@ -64,7 +62,7 @@ The frontend layout is built with responsive styles and supports mobile devices.
 - View order history and shipping details
 - Dark mode toggle and in-browser persistence
 
-## ðŸ¬ Seller Features
+## 🏬 Seller Features
 
 - Register as a seller and access seller-only routes
 - Upload and manage products with images
@@ -73,32 +71,32 @@ The frontend layout is built with responsive styles and supports mobile devices.
 - Review orders for sold items
 - Update order status to shipped or delivered
 
-## ðŸ” Authentication
+## 🔐 Authentication
 
 - Buyer and seller signup/login flows
 - JWT authentication for protected API endpoints
 - Password hashing with bcryptjs
 - Role-based access control via middleware
 
-## ðŸ” Search and Filtering
+## 🔍 Search and Filtering
 
 - Search query support for product titles
 - Category filtering in product list endpoints
 - Server-side filters for efficient browsing
 
-## ðŸ“± Responsive Design
+## 📱 Responsive Design
 
 - Styled using inline responsive layout patterns
 - Mobile-friendly hero, product grid, and navigation
 - LocalStorage persistence for cart and wishlist
 
-## ðŸ’³ Payment Integration
+## 💳 Payment Integration
 
 - Razorpay dependency installed in backend
 - Order schema includes `razorpayOrderId` and `razorpayPaymentId`
 - Payments route scaffolded for future checkout integration
 
-## ðŸ› ï¸ Tech Stack
+## 🛠️ Tech Stack
 
 | Layer          | Technologies                                                |
 | -------------- | ----------------------------------------------------------- |
@@ -108,23 +106,23 @@ The frontend layout is built with responsive styles and supports mobile devices.
 | Authentication | JWT, bcryptjs                                               |
 | Deployment     | Vercel, Render / Railway / Heroku                           |
 
-## ðŸ—ï¸ Project Architecture
+## 🏗️ Project Architecture
 
 ### Frontend structure
 
-- `frontend/app/` â€” main page and route components
-- `frontend/components/` â€” reusable UI elements such as `Navbar`
-- `frontend/context/` â€” global app state and cart/session handling
-- `frontend/lib/` â€” API utilities and helper logic
-- `frontend/public/` â€” static assets
+- `frontend/app/` — main page and route components
+- `frontend/components/` — reusable UI elements such as `Navbar`
+- `frontend/context/` — global app state and cart/session handling
+- `frontend/lib/` — API utilities and helper logic
+- `frontend/public/` — static assets
 
 ### Backend structure
 
-- `backend/server.js` â€” Express app entrypoint
-- `backend/routes/` â€” API route files for auth, products, orders, payments
-- `backend/models/` â€” Mongoose schemas for User, Product, Order
-- `backend/middleware/` â€” auth middleware for JWT and role checks
-- `backend/config/` â€” database connection logic
+- `backend/server.js` — Express app entrypoint
+- `backend/routes/` — API route files for auth, products, orders, payments
+- `backend/models/` — Mongoose schemas for User, Product, Order
+- `backend/middleware/` — auth middleware for JWT and role checks
+- `backend/config/` — database connection logic
 
 ### Database flow
 
@@ -133,40 +131,40 @@ The frontend layout is built with responsive styles and supports mobile devices.
 - `Buyer` places `Order` items from seller products
 - Orders reference both buyer and seller for relationship tracking
 
-## ðŸ“ Folder Structure
+## 📁 Folder Structure
 
 ```
 handcraft/
-â”œâ”€ backend/
-â”‚  â”œâ”€ config/db.js
-â”‚  â”œâ”€ middleware/auth.js
-â”‚  â”œâ”€ models/Order.js
-â”‚  â”œâ”€ models/Product.js
-â”‚  â”œâ”€ models/User.js
-â”‚  â”œâ”€ routes/auth.js
-â”‚  â”œâ”€ routes/orders.js
-â”‚  â”œâ”€ routes/payments.js
-â”‚  â”œâ”€ routes/products.js
-â”‚  â””â”€ server.js
-â””â”€ frontend/
-   â”œâ”€ app/
-   â”‚  â”œâ”€ artisans/[id]/
-   â”‚  â”œâ”€ cart/page.tsx
-   â”‚  â”œâ”€ checkout/page.tsx
-   â”‚  â”œâ”€ dashboard/page.tsx
-   â”‚  â”œâ”€ login/page.tsx
-   â”‚  â”œâ”€ my-account/page.tsx
-   â”‚  â”œâ”€ orders/
-   â”‚  â”œâ”€ products/
-   â”‚  â”œâ”€ signup/page.tsx
-   â”‚  â””â”€ wishlist/page.tsx
-   â”œâ”€ components/Navbar.tsx
-   â”œâ”€ context/AppContext.tsx
-   â”œâ”€ lib/api.ts
-   â””â”€ globals.css
+├─ backend/
+│  ├─ config/db.js
+│  ├─ middleware/auth.js
+│  ├─ models/Order.js
+│  ├─ models/Product.js
+│  ├─ models/User.js
+│  ├─ routes/auth.js
+│  ├─ routes/orders.js
+│  ├─ routes/payments.js
+│  ├─ routes/products.js
+│  └─ server.js
+└─ frontend/
+   ├─ app/
+   │  ├─ artisans/[id]/
+   │  ├─ cart/page.tsx
+   │  ├─ checkout/page.tsx
+   │  ├─ dashboard/page.tsx
+   │  ├─ login/page.tsx
+   │  ├─ my-account/page.tsx
+   │  ├─ orders/
+   │  ├─ products/
+   │  ├─ signup/page.tsx
+   │  └─ wishlist/page.tsx
+   ├─ components/Navbar.tsx
+   ├─ context/AppContext.tsx
+   ├─ lib/api.ts
+   └─ globals.css
 ```
 
-## ðŸš€ Installation & Setup
+## 🚀 Installation & Setup
 
 ### 1. Clone repository
 
@@ -202,20 +200,20 @@ cd backend
 npm run dev
 ```
 
-## ðŸ”‘ Environment Variables
+## 🔑 Environment Variables
 
 Create `backend/.env` with:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://craftadmin:craft1234@cluster0.brpzr0z.mongodb.net/craftstore?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=mysupersecretkey123
-CLOUDINARY_CLOUD_NAME=dlokpuewt
-CLOUDINARY_API_KEY=534643617822269
-CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 ```
 
-## ðŸ§ª API Endpoints
+## 🧪 API Endpoints
 
 ### Authentication routes
 
@@ -253,7 +251,7 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 | --------------- | ------ | ------ | ---------------------- |
 | `/api/payments` | GET    | Public | Payment route scaffold |
 
-## ðŸ§± Database Schema
+## 🧱 Database Schema
 
 ### Main collections
 
@@ -268,33 +266,33 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 
 ### Product schema
 
-- `seller` â†’ User reference
+- `seller` → User reference
 - `title`, `description`, `price`, `category`, `image`, `stock`
 - `variants` array for size/color options
 
 ### Order schema
 
-- `buyer` â†’ User reference
-- `seller` â†’ User reference
-- `items` â†’ array of order item details
+- `buyer` → User reference
+- `seller` → User reference
+- `items` → array of order item details
 - `totalAmount`, `status`, `shippingAddress`
 - Razorpay integration fields: `razorpayOrderId`, `razorpayPaymentId`
 
-## ðŸ”— Relationships
+## 🔗 Relationships
 
 - One seller to many products
 - One buyer to many orders
 - One seller to many orders
 - Orders contain references to products and users
 
-## ðŸ§  Challenges Faced
+## 🧠 Challenges Faced
 
 - Implementing role-based access control for buyer and seller flows
 - Creating robust product CRUD with protected upload routes
 - Designing a portfolio-ready responsive landing page
 - Managing session state for cart, wishlist, and auth
 
-## ðŸŽ“ Learning Outcomes
+## 🎓 Learning Outcomes
 
 - Built a production-style full-stack marketplace
 - Used JWT and bcrypt for authentication security
@@ -302,21 +300,21 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 - Modeled relationships in MongoDB with Mongoose
 - Designed a responsive user interface for desktop and mobile
 
-## âš¡ Performance Optimizations
+## ⚡ Performance Optimizations
 
 - Caching: localStorage persistence for cart and wishlist
 - Code splitting: Next.js route-based splitting for fast page loads
 - Image optimization: Cloudinary upload transformations with responsive delivery
 - API optimization: query filters and indexed Mongoose models
 
-## ðŸ›¡ï¸ Security Features
+## 🛡️ Security Features
 
 - JWT authentication for protected routes
 - Password hashing with bcryptjs
 - Role-based middleware for seller-only access
 - Input checks for required fields and ownership validation
 
-## ðŸš§ Future Improvements
+## 🚧 Future Improvements
 
 - Add full checkout payment flow with Razorpay
 - Build admin dashboard and analytics panels
@@ -324,7 +322,7 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 - Add server-side search indexing and caching
 - Deploy as a scalable microservices architecture
 
-## â˜ï¸ Deployment
+## ☁️ Deployment
 
 ### Vercel configuration
 
@@ -343,7 +341,7 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 - Use separate env configs for production and local development
 - Secure secrets with deployment platform vaults or environment settings
 
-## âœ… Testing
+## ✅ Testing
 
 ### Manual testing steps
 
@@ -359,7 +357,7 @@ CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 - Buyer account: any valid email/password combination
 - Seller account: any valid email/password combination with role set to `seller`
 
-## ðŸ¤ Contributing
+## 🤝 Contributing
 
 Contributions are welcome!
 
@@ -368,11 +366,11 @@ Contributions are welcome!
 3. Add tests and update the README if needed
 4. Submit a pull request
 
-## ðŸ“„ License
+## 📄 License
 
 MIT License
 
-## ðŸ‘¨â€ðŸ’» Author
+## 👨‍💻 Author
 
 - Name: `sujay kumar singh`
 - GitHub: [github.com/Sujaykr99](https://github.com/Sujaykr99)
