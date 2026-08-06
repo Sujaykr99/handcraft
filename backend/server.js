@@ -10,13 +10,18 @@ const app = express()
 
 const allowedOrigins = [
   'http://localhost:3000',
-  'https://handcraft-mu.vercel.app',
-  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(origin => origin.trim()) : [])
+  'http://localhost:3001',
+  ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',').map(origin => origin.trim()) : []),
 ]
 
 app.use(cors({
   origin(origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.vercel.dev')
+    ) {
       callback(null, true)
       return
     }
