@@ -5,13 +5,17 @@ import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
 import { useRef, useState } from "react";
 
 const crafts = [
-  { name: "Kantha", src: "/crafts/kantha.jpg" },
-  { name: "Pattachitra", src: "/crafts/pattachitra.jpg" },
-  { name: "Kalamkari", src: "/crafts/kalamkari.jpg" },
-  { name: "Dhokra", src: "/crafts/dhokra.jpg" },
-  { name: "Madhubani", src: "/crafts/madhubani.jpg" },
-  { name: "Tribal Bottle", src: "/crafts/tribal-bottle.jpg" },
-  { name: "Lotus Embroidery", src: "/crafts/lotus-embroidery.jpg" },
+  { name: "Kantha", src: "/crafts/Kantha of Bengal (1).jpg" },
+  { name: "Pattachitra", src: "/crafts/Anokhi in India_.jpg" },
+  { name: "Kalamkari", src: "/crafts/Products.jpg" },
+  { name: "Dhokra", src: "/crafts/Hand-Painted Tribal Art Bottle Decor.jpg" },
+  { name: "Madhubani", src: "/crafts/Swan Boat Showpiece.jpg" },
+  { name: "Warli", src: "/crafts/Sola Mixed Lotus.jpg" },
+  { name: "Wood Carving", src: "/crafts/Products.jpg" },
+  {
+    name: "Terracotta",
+    src: "/crafts/Hand-Painted Tribal Art Bottle Decor.jpg",
+  },
 ] as const;
 
 const dustParticles = [
