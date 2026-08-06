@@ -39,31 +39,61 @@ export default function Navbar() {
       </Link>
 
       <div style={{ display: 'flex', gap: '2.5rem' }}>
-        {[{ label: 'Collections', href: '/products' }, { label: 'Artisans', href: '/' }, { label: 'Our Story', href: '/' }, { label: 'Journal', href: '/' }].map(item => (
-          <Link key={item.label} href={item.href} style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
-            {item.label}
-          </Link>
-        ))}
+        {!user || user.role !== 'seller' ? (
+          <>
+            <Link href="/products" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              Collections
+            </Link>
+            <Link href="/" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              Artisans
+            </Link>
+            <Link href="/" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              Our Story
+            </Link>
+            <Link href="/" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              Journal
+            </Link>
+          </>
+        ) : (
+          <>
+            <Link href="/dashboard" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              My Studio
+            </Link>
+            <Link href="/products" style={{ fontFamily: C.sans, fontSize: '0.78rem', color: dm ? 'rgba(255,248,241,0.75)' : '#3a3530', fontWeight: 400, letterSpacing: '0.01em', transition: 'color 0.2s' }}>
+              View Store
+            </Link>
+          </>
+        )}
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-        <button onClick={toggleDarkMode} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95rem', color: dm ? C.surface : C.onSurface, padding: 0, lineHeight: 1 }}>
-          {dm ? '☀' : '◐'}
-        </button>
+        {!user || user.role !== 'seller' ? (
+          <>
+            <button onClick={toggleDarkMode} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95rem', color: dm ? C.surface : C.onSurface, padding: 0, lineHeight: 1 }}>
+              {dm ? '☀' : '◐'}
+            </button>
 
-        <Link href="/wishlist" style={{ position: 'relative', display: 'flex', color: dm ? C.surface : C.onSurface }}>
-          <svg width="17" height="17" fill={wishlist.length > 0 ? C.primary : 'none'} stroke={wishlist.length > 0 ? C.primary : (dm ? C.surface : C.onSurface)} strokeWidth="1.4" viewBox="0 0 24 24">
-            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-          </svg>
-          {wishlist.length > 0 && <span style={{ position: 'absolute', top: '-5px', right: '-7px', background: C.primary, color: 'white', borderRadius: '50%', width: '13px', height: '13px', fontSize: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: C.sans, fontWeight: 700 }}>{wishlist.length}</span>}
-        </Link>
+            <Link href="/wishlist" style={{ position: 'relative', display: 'flex', color: dm ? C.surface : C.onSurface }}>
+              <svg width="17" height="17" fill={wishlist.length > 0 ? C.primary : 'none'} stroke={wishlist.length > 0 ? C.primary : (dm ? C.surface : C.onSurface)} strokeWidth="1.4" viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+              {wishlist.length > 0 && <span style={{ position: 'absolute', top: '-5px', right: '-7px', background: C.primary, color: 'white', borderRadius: '50%', width: '13px', height: '13px', fontSize: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: C.sans, fontWeight: 700 }}>{wishlist.length}</span>}
+            </Link>
 
-        <Link href="/cart" style={{ position: 'relative', display: 'flex', color: dm ? C.surface : C.onSurface }}>
-          <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.4" viewBox="0 0 24 24">
-            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
-          </svg>
-          {cartCount > 0 && <span style={{ position: 'absolute', top: '-5px', right: '-7px', background: C.primary, color: 'white', borderRadius: '50%', width: '15px', height: '15px', fontSize: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: C.sans, fontWeight: 700 }}>{cartCount}</span>}
-        </Link>
+            <Link href="/cart" style={{ position: 'relative', display: 'flex', color: dm ? C.surface : C.onSurface }}>
+              <svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.4" viewBox="0 0 24 24">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+              </svg>
+              {cartCount > 0 && <span style={{ position: 'absolute', top: '-5px', right: '-7px', background: C.primary, color: 'white', borderRadius: '50%', width: '15px', height: '15px', fontSize: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: C.sans, fontWeight: 700 }}>{cartCount}</span>}
+            </Link>
+          </>
+        ) : (
+          <>
+            <button onClick={toggleDarkMode} style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '0.95rem', color: dm ? C.surface : C.onSurface, padding: 0, lineHeight: 1 }}>
+              {dm ? '☀' : '◐'}
+            </button>
+          </>
+        )}
 
         {user ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

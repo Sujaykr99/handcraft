@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useApp } from '../../context/AppContext'
 import { apiRequest } from '../../lib/api'
+import { useRouter } from 'next/navigation'
 
 const s = {
   serif: { fontFamily: "'Newsreader', Georgia, serif" } as React.CSSProperties,
@@ -11,9 +12,17 @@ const s = {
 }
 
 export default function Wishlist() {
-  const { wishlist, toggleWishlist, addToCart, darkMode } = useApp()
+  const { wishlist, toggleWishlist, addToCart, darkMode, user } = useApp()
+  const router = useRouter()
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Redirect sellers to dashboard
+  useEffect(() => {
+    if (user && user.role === 'seller') {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   const bg = darkMode ? '#1a1410' : '#fff8f1'
   const cardBg = darkMode ? '#2a2218' : '#ffffff'

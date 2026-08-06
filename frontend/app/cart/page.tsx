@@ -1,6 +1,8 @@
 'use client'
 import Link from 'next/link'
 import { useApp } from '../../context/AppContext'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 const C = {
   serif: "'Newsreader', Georgia, serif",
@@ -15,7 +17,16 @@ const C = {
 }
 
 export default function Cart() {
-  const { cart, removeFromCart, cartTotal, darkMode } = useApp()
+  const { cart, removeFromCart, cartTotal, darkMode, user } = useApp()
+  const router = useRouter()
+
+  // Redirect sellers to dashboard
+  useEffect(() => {
+    if (user && user.role === 'seller') {
+      router.push('/dashboard')
+    }
+  }, [user, router])
+
   const dm = darkMode
   const bg = dm ? '#1a1410' : C.surface
   const cardBg = dm ? '#2a2218' : '#ffffff'

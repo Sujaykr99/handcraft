@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { apiRequest } from '../../lib/api'
 import { useApp } from '../../context/AppContext'
+import { useRouter } from 'next/navigation'
 
 const C = {
   serif: "'Newsreader', Georgia, serif",
@@ -32,14 +33,22 @@ const placeholderImgs: Record<string, string> = {
 }
 
 function ProductsContent() {
-  const { addToCart, wishlist, toggleWishlist, darkMode } = useApp()
+  const { addToCart, wishlist, toggleWishlist, darkMode, user } = useApp()
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [products, setProducts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState(searchParams.get('search') || '')
   const [category, setCategory] = useState(searchParams.get('category') || '')
   const [sortBy, setSortBy] = useState('newest')
   const [priceMax, setPriceMax] = useState(10000)
+
+  // Redirect sellers to dashboard
+  useEffect(() => {
+    if (user && user.role === 'seller') {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   const dm = darkMode
   const bg = dm ? '#1a1410' : C.surface

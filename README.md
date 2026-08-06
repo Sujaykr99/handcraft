@@ -1,4 +1,4 @@
-﻿# HandArt Marketplace 🛍️
+# HandArt Marketplace 🛍️
 
 [![Status](https://img.shields.io/badge/status-production-brightgreen)](https://github.com/) [![Frontend](https://img.shields.io/badge/frontend-Next.js-blue)](https://nextjs.org/) [![Backend](https://img.shields.io/badge/backend-Node.js-%23339933)](https://nodejs.org/) [![Database](https://img.shields.io/badge/database-MongoDB-%2347A248)](https://www.mongodb.com/) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -34,9 +34,11 @@ This project was built to demonstrate end-to-end full-stack skills, including:
 - Frontend deployment: `https://handcraft-mu.vercel.app/`
 - Backend API: `https://handart-backend.onrender.com`
 
+> Update these URLs after deployment.
+
 ## 🖼️ Screenshots
 
-![Homepage Preview](images/Screenshot%202026-06-10%20095835.png)
+![Homepage Preview] (./Screenshot 2026-06-10 095835.png)
 
 ## ✨ Key Features
 
@@ -90,11 +92,15 @@ The frontend layout is built with responsive styles and supports mobile devices.
 - Mobile-friendly hero, product grid, and navigation
 - LocalStorage persistence for cart and wishlist
 
-## 💳 Payment Integration
+## 🚧 Future Roadmap
 
-- Razorpay dependency installed in backend
-- Order schema includes `razorpayOrderId` and `razorpayPaymentId`
-- Payments route scaffolded for future checkout integration
+- Secure Payment Gateway Integration
+- Order Tracking System
+- Product Reviews & Ratings
+- Artisan Verification Program
+- Personalized Product Recommendations
+- Advanced Analytics Dashboard
+- AI-Powered Product Discovery
 
 ## 🛠️ Tech Stack
 
@@ -206,11 +212,11 @@ Create `backend/.env` with:
 
 ```env
 PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+MONGO_URI=mongodb+srv://craftadmin:craft1234@cluster0.brpzr0z.mongodb.net/craftstore?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=mysupersecretkey123
+CLOUDINARY_CLOUD_NAME=dlokpuewt
+CLOUDINARY_API_KEY=534643617822269
+CLOUDINARY_API_SECRET=mDOgVi0L8I9gSWwtpdYkqpteNWc
 ```
 
 ## 🧪 API Endpoints
