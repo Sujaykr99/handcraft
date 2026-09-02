@@ -1,11 +1,19 @@
 "use client";
+
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useApp } from "../context/AppContext";
+import { useApp } from "@/context/AppContext";
+
+const C = {
+  serif: "'Newsreader', Georgia, serif",
+  sans: "'Plus Jakarta Sans', sans-serif",
+  primary: "#9f402d",
+  surface: "#fff8f1",
+  onSurface: "#1e1b17",
+};
 
 export default function Navbar() {
-  const { cartCount, user, setUser, wishlist, darkMode, toggleDarkMode } =
-    useApp();
+  const { cartCount, user, setUser, wishlist, darkMode, toggleDarkMode, logout } = useApp();
   const [scrolled, setScrolled] = useState(false);
   const isBuyer = user?.role === "buyer";
   const isArtisan = user?.role === "artisan";
@@ -16,21 +24,19 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    setUser(null);
-    window.location.href = "/";
+  const handleLogout = () => {
+    logout();
   };
 
   const dm = darkMode;
-  const C = {
-    serif: "'Newsreader', Georgia, serif",
-    sans: "'Plus Jakarta Sans', sans-serif",
-    primary: "#9f402d",
-    surface: "#fff8f1",
-    onSurface: "#1e1b17",
-  };
+  const bg = scrolled
+    ? dm
+      ? "rgba(26,20,16,0.92)"
+      : "rgba(255,248,241,0.92)"
+    : "transparent";
+  const border = scrolled ? "1px solid rgba(30,27,23,0.07)" : "none";
+  const linkColor = dm ? "rgba(255,248,241,0.75)" : "#3a3530";
+  const logoColor = dm ? C.surface : C.onSurface;
 
   return (
     <nav
@@ -45,13 +51,9 @@ export default function Navbar() {
         justifyContent: "space-between",
         alignItems: "center",
         transition: "all 0.35s ease",
-        background: scrolled
-          ? dm
-            ? "rgba(26,20,16,0.92)"
-            : "rgba(255,248,241,0.92)"
-          : "transparent",
+        background: bg,
         backdropFilter: scrolled ? "blur(16px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(30,27,23,0.07)" : "none",
+        borderBottom: border,
       }}
     >
       <Link
@@ -60,7 +62,7 @@ export default function Navbar() {
           fontFamily: C.serif,
           fontSize: "1rem",
           fontStyle: "italic",
-          color: dm ? C.surface : C.onSurface,
+          color: logoColor,
           fontWeight: 400,
           letterSpacing: "0.01em",
         }}
@@ -76,7 +78,7 @@ export default function Navbar() {
               style={{
                 fontFamily: C.sans,
                 fontSize: "0.78rem",
-                color: dm ? "rgba(255,248,241,0.75)" : "#3a3530",
+                color: linkColor,
                 fontWeight: 400,
                 letterSpacing: "0.01em",
                 transition: "color 0.2s",
@@ -89,7 +91,7 @@ export default function Navbar() {
               style={{
                 fontFamily: C.sans,
                 fontSize: "0.78rem",
-                color: dm ? "rgba(255,248,241,0.75)" : "#3a3530",
+                color: linkColor,
                 fontWeight: 400,
                 letterSpacing: "0.01em",
                 transition: "color 0.2s",
@@ -101,11 +103,11 @@ export default function Navbar() {
         ) : (
           <>
             <Link
-              href="/artisans"
+              href="/studio"
               style={{
                 fontFamily: C.sans,
                 fontSize: "0.78rem",
-                color: dm ? "rgba(255,248,241,0.75)" : "#3a3530",
+                color: linkColor,
                 fontWeight: 400,
                 letterSpacing: "0.01em",
                 transition: "color 0.2s",
@@ -118,7 +120,7 @@ export default function Navbar() {
               style={{
                 fontFamily: C.sans,
                 fontSize: "0.78rem",
-                color: dm ? "rgba(255,248,241,0.75)" : "#3a3530",
+                color: linkColor,
                 fontWeight: 400,
                 letterSpacing: "0.01em",
                 transition: "color 0.2s",
@@ -131,23 +133,23 @@ export default function Navbar() {
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+        <button
+          onClick={toggleDarkMode}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "0.95rem",
+            color: dm ? C.surface : C.onSurface,
+            padding: 0,
+            lineHeight: 1,
+          }}
+        >
+          {dm ? "☀" : "◐"}
+        </button>
+
         {isBuyer ? (
           <>
-            <button
-              onClick={toggleDarkMode}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.95rem",
-                color: dm ? C.surface : C.onSurface,
-                padding: 0,
-                lineHeight: 1,
-              }}
-            >
-              {dm ? "☀" : "◐"}
-            </button>
-
             <Link
               href="/wishlist"
               style={{
@@ -160,9 +162,7 @@ export default function Navbar() {
                 width="17"
                 height="17"
                 fill={wishlist.length > 0 ? C.primary : "none"}
-                stroke={
-                  wishlist.length > 0 ? C.primary : dm ? C.surface : C.onSurface
-                }
+                stroke={wishlist.length > 0 ? C.primary : dm ? C.surface : C.onSurface}
                 strokeWidth="1.4"
                 viewBox="0 0 24 24"
               >
@@ -237,37 +237,47 @@ export default function Navbar() {
             </Link>
           </>
         ) : (
-          <>
-            <button
-              onClick={toggleDarkMode}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "0.95rem",
-                color: dm ? C.surface : C.onSurface,
-                padding: 0,
-                lineHeight: 1,
-              }}
-            >
-              {dm ? "☀" : "◐"}
-            </button>
-          </>
+          <button
+            onClick={toggleDarkMode}
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "0.95rem",
+              color: dm ? C.surface : C.onSurface,
+              padding: 0,
+              lineHeight: 1,
+            }}
+          >
+            {dm ? "☀" : "◐"}
+          </button>
         )}
 
         {user ? (
           <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
             {isArtisan ? (
-              <Link
-                href="/artisans"
-                style={{
-                  fontFamily: C.sans,
-                  fontSize: "0.75rem",
-                  color: dm ? "rgba(255,248,241,0.6)" : "#6b6560",
-                }}
-              >
-                Studio
-              </Link>
+              <>
+                <Link
+                  href="/studio"
+                  style={{
+                    fontFamily: C.sans,
+                    fontSize: "0.75rem",
+                    color: dm ? "rgba(255,248,241,0.6)" : "#6b6560",
+                  }}
+                >
+                  Studio
+                </Link>
+                <Link
+                  href="/studio/profile"
+                  style={{
+                    fontFamily: C.sans,
+                    fontSize: "0.75rem",
+                    color: dm ? "rgba(255,248,241,0.6)" : "#6b6560",
+                  }}
+                >
+                  Profile
+                </Link>
+              </>
             ) : (
               <Link
                 href="/my-account"
@@ -281,7 +291,7 @@ export default function Navbar() {
               </Link>
             )}
             <button
-              onClick={logout}
+              onClick={handleLogout}
               style={{
                 fontFamily: C.sans,
                 fontSize: "0.75rem",
@@ -297,8 +307,12 @@ export default function Navbar() {
           </div>
         ) : (
           <div style={{ display: "flex", gap: "1rem", fontFamily: C.sans, fontSize: "0.75rem" }}>
-            <Link href="/login" style={{ color: dm ? C.surface : C.onSurface }}>Login</Link>
-            <Link href="/signup" style={{ color: dm ? C.surface : C.onSurface }}>Signup</Link>
+            <Link href="/login" style={{ color: dm ? C.surface : C.onSurface }}>
+              Login
+            </Link>
+            <Link href="/signup" style={{ color: dm ? C.surface : C.onSurface }}>
+              Signup
+            </Link>
           </div>
         )}
       </div>

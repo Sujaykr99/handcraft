@@ -18,10 +18,10 @@ const protect = (req, res, next) => {
   }
 }
 
-const sellerOnly = (req, res, next) => {
-  if (req.user.role !== 'seller') {
+const artisanOnly = (req, res, next) => {
+  if (req.user.role !== 'artisan') {
     return res.status(403).json({
-      message: 'Access denied — sellers only'
+      message: 'Access denied — artisans only'
     })
   }
   next()
@@ -36,4 +36,4 @@ const buyerOnly = (req, res, next) => {
   next()
 }
 
-module.exports = { protect, sellerOnly, buyerOnly }
+module.exports = { protect, artisanOnly, sellerOnly: artisanOnly, buyerOnly }

@@ -22,8 +22,8 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ message: 'All fields are required' })
     }
 
-    if (!['buyer', 'seller'].includes(role)) {
-      return res.status(400).json({ message: 'Role must be buyer or seller' })
+    if (!['buyer', 'artisan'].includes(role)) {
+      return res.status(400).json({ message: 'Role must be buyer or artisan' })
     }
 
     const existingUser = await User.findOne({ email })
@@ -39,7 +39,7 @@ router.post('/signup', async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      redirectTo: user.role === 'seller' ? '/dashboard' : '/',
+      redirectTo: user.role === 'artisan' ? '/artisans' : '/dashboard',
       token: generateToken(user)
     })
   } catch (error) {
@@ -71,7 +71,7 @@ router.post('/login', async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
-      redirectTo: user.role === 'seller' ? '/dashboard' : '/my-account',
+      redirectTo: user.role === 'artisan' ? '/artisans' : '/dashboard',
       token: generateToken(user)
     })
   } catch (error) {
@@ -84,7 +84,7 @@ router.get('/me', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password')
     if (!user) return res.status(404).json({ message: 'User not found' })
-    res.json(user)
+    res.json({ ...user.toObject(), role: user.role })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

@@ -2,9 +2,9 @@ const express = require('express')
 const router = express.Router()
 const Order = require('../models/Order')
 const Product = require('../models/Product')
-const { protect, sellerOnly } = require('../middleware/auth')
+const { protect, sellerOnly, buyerOnly } = require('../middleware/auth')
 
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, buyerOnly, async (req, res) => {
   try {
     const { items, shippingAddress } = req.body
     if (!items || items.length === 0) return res.status(400).json({ message: 'No items in order' })
@@ -23,7 +23,7 @@ router.post('/', protect, async (req, res) => {
   } catch (error) { res.status(500).json({ message: error.message }) }
 })
 
-router.get('/my', protect, async (req, res) => {
+router.get('/my', protect, buyerOnly, async (req, res) => {
   try {
     const orders = await Order.find({ buyer: req.user.id }).populate('seller', 'name email').sort({ createdAt: -1 })
     res.json(orders)
@@ -42,6 +42,7 @@ router.put('/:id/status', protect, sellerOnly, async (req, res) => {
     const { status } = req.body
     const order = await Order.findById(req.params.id)
     if (!order) return res.status(404).json({ message: 'Order not found' })
+    if (order.seller.toString() !== req.user.id) return res.status(403).json({ message: 'You can only manage your own orders' })
     order.status = status
     await order.save()
     res.json(order)
@@ -52,6 +53,9 @@ router.get('/:id', protect, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate('seller', 'name email').populate('buyer', 'name email')
     if (!order) return res.status(404).json({ message: 'Order not found' })
+    if (order.buyer._id.toString() !== req.user.id && order.seller._id.toString() !== req.user.id) {
+      return res.status(403).json({ message: 'You can only view your own orders' })
+    }
     res.json(order)
   } catch (error) { res.status(500).json({ message: error.message }) }
 })

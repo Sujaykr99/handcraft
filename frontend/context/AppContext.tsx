@@ -1,12 +1,13 @@
 'use client'
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react'
+import { apiRequest } from '../lib/api'
 
 interface CartItem { _id: string; title: string; price: number; image: string; category: string; quantity: number; seller?: any }
 interface Toast { id: number; message: string; type: 'success'|'error'|'info' }
 interface Ctx {
   cart: CartItem[]; addToCart: (p: any, qty?: number) => void; removeFromCart: (id: string) => void; clearCart: () => void
   cartCount: number; cartTotal: number
-  user: any; setUser: (u: any) => void
+  user: any; setUser: (u: any) => void; authReady: boolean
   wishlist: string[]; toggleWishlist: (id: string) => void
   toasts: Toast[]; showToast: (msg: string, type?: 'success'|'error'|'info') => void
   darkMode: boolean; toggleDarkMode: () => void
@@ -16,15 +17,26 @@ const AppContext = createContext<Ctx>({} as Ctx)
 export function AppProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([])
   const [user, setUserState] = useState<any>(null)
+  const [authReady, setAuthReady] = useState(false)
   const [wishlist, setWishlist] = useState<string[]>([])
   const [toasts, setToasts] = useState<Toast[]>([])
   const [darkMode, setDarkMode] = useState(false)
+  const setUser = (u: any) => { setUserState(u); u ? localStorage.setItem('user', JSON.stringify(u)) : localStorage.removeItem('user') }
 
   useEffect(() => {
     const c = localStorage.getItem('cart'); if (c) setCart(JSON.parse(c))
-    const u = localStorage.getItem('user'); if (u) setUserState(JSON.parse(u))
     const w = localStorage.getItem('wishlist'); if (w) setWishlist(JSON.parse(w))
     const d = localStorage.getItem('darkMode'); if (d) setDarkMode(JSON.parse(d))
+    const token = localStorage.getItem('token')
+    if (!token) { setAuthReady(true); return }
+    apiRequest('/api/auth/me', 'GET', undefined, token)
+      .then((authenticatedUser) => setUser(authenticatedUser))
+      .catch(() => {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        setUserState(null)
+      })
+      .finally(() => setAuthReady(true))
   }, [])
 
   const showToast = useCallback((message: string, type: 'success'|'error'|'info' = 'success') => {
@@ -54,8 +66,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   setCart([])
   localStorage.removeItem('cart')
 }
-  const setUser = (u: any) => { setUserState(u); u ? localStorage.setItem('user', JSON.stringify(u)) : localStorage.removeItem('user') }
-
   const toggleWishlist = useCallback((id: string) => {
     setWishlist(prev => {
       const u = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
@@ -71,7 +81,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const cartTotal = cart.reduce((s, i) => s + i.price * i.quantity, 0)
 
   return (
-    <AppContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, cartCount, cartTotal, user, setUser, wishlist, toggleWishlist, toasts, showToast, darkMode, toggleDarkMode }}>
+    <AppContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, cartCount, cartTotal, user, setUser, authReady, wishlist, toggleWishlist, toasts, showToast, darkMode, toggleDarkMode }}>
       {children}
       <div style={{ position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
         {toasts.map(t => (

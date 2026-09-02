@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { useApp } from '../../context/AppContext'
 import { apiRequest } from '../../lib/api'
 import Link from 'next/link'
+import RoleGuard from '../../components/RoleGuard'
 
 const C = {
   serif: "'Newsreader', Georgia, serif",
@@ -17,7 +18,7 @@ const C = {
   muted: '#6b6560',
 }
 
-export default function Checkout() {
+function CheckoutContent() {
   const router = useRouter()
   const { cart, cartTotal, clearCart, darkMode, showToast, user } = useApp()
   const [loading, setLoading] = useState(false)
@@ -157,4 +158,8 @@ export default function Checkout() {
       </div>
     </div>
   )
+}
+
+export default function Checkout() {
+  return <RoleGuard role="buyer"><CheckoutContent /></RoleGuard>
 }

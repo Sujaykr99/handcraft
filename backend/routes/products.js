@@ -37,6 +37,15 @@ router.get('/', async (req, res) => {
 })
 
 // GET /api/products/:id — single product detail
+router.get('/seller/my', protect, sellerOnly, async (req, res) => {
+  try {
+    const products = await Product.find({ seller: req.user.id }).sort({ createdAt: -1 })
+    res.json(products)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+})
+
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
@@ -81,16 +90,6 @@ router.post('/upload-image', protect, sellerOnly, upload.single('image'), async 
 })
 
 // GET /api/products/seller/my — seller sees own products
-router.get('/seller/my', protect, sellerOnly, async (req, res) => {
-  try {
-    const products = await Product.find({ seller: req.user.id })
-      .sort({ createdAt: -1 })
-    res.json(products)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-})
-
 // POST /api/products — seller creates product
 router.post('/', protect, sellerOnly, async (req, res) => {
   try {

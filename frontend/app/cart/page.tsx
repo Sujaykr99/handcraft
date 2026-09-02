@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useApp } from '../../context/AppContext'
+import RoleGuard from '../../components/RoleGuard'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -16,14 +17,14 @@ const C = {
   muted: '#6b6560',
 }
 
-export default function Cart() {
+function CartContent() {
   const { cart, removeFromCart, cartTotal, darkMode, user } = useApp()
   const router = useRouter()
 
   // Redirect sellers to dashboard
   useEffect(() => {
-    if (user && user.role === 'seller') {
-      router.push('/dashboard')
+    if (user && user.role === 'artisan') {
+      router.push('/artisans')
     }
   }, [user, router])
 
@@ -101,4 +102,8 @@ export default function Cart() {
       </div>
     </div>
   )
+}
+
+export default function Cart() {
+  return <RoleGuard role="buyer"><CartContent /></RoleGuard>
 }

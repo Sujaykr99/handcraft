@@ -7,14 +7,12 @@ import { useRef, useState } from "react";
 const crafts = [
   {
     name: "Kantha Embroidery",
-    description:
-      "Layered stitches that preserve memory through thread and time.",
+    description: "Layered stitches that preserve memory through thread and time.",
     src: "/crafts/Kantha of Bengal (1).jpg",
   },
   {
     name: "Pattachitra",
-    description:
-      "Narrative painting traditions drawn with precision and devotion.",
+    description: "Narrative painting traditions drawn with precision and devotion.",
     src: "/crafts/Anokhi in India_.jpg",
   },
   {
@@ -29,8 +27,7 @@ const crafts = [
   },
   {
     name: "Madhubani",
-    description:
-      "Bold imagery and symbolic patterns from a living folk tradition.",
+    description: "Bold imagery and symbolic patterns from a living folk tradition.",
     src: "/crafts/Swan Boat Showpiece.jpg",
   },
   {
@@ -97,11 +94,13 @@ export default function OurStorySection() {
 
   return (
     <section className="relative overflow-hidden bg-[#f5ead8] px-6 py-20 text-[#2c1d12] sm:px-10 lg:px-16 lg:py-28">
+      {/* Ambient background layers */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,248,0.95)_0%,rgba(245,234,216,0.96)_40%,rgba(232,213,182,0.98)_100%)]" />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0)_24%,rgba(114,79,35,0.06)_100%)]" />
       <div className="absolute inset-0 opacity-45 [background-image:radial-gradient(circle_at_1px_1px,rgba(110,80,45,0.09)_1px,transparent_0)] [background-size:22px_22px]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(205,159,88,0.18)_0%,rgba(205,159,88,0.08)_22%,transparent_52%),radial-gradient(circle_at_50%_50%,rgba(255,243,214,0.35)_0%,transparent_28%)]" />
 
+      {/* Floating dust particles */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         {floatingDust.map((particle, index) => (
           <motion.span
@@ -125,23 +124,38 @@ export default function OurStorySection() {
       </div>
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-col items-center">
+        {/* Header */}
         <div className="mb-10 max-w-3xl text-center sm:mb-12">
-          <p className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.55em] text-[#8b612f]">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="mb-4 text-[0.72rem] font-semibold uppercase tracking-[0.55em] text-[#8b612f]"
+          >
             Heritage Story
-          </p>
-          <h1
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-5xl font-light tracking-[-0.05em] text-[#24170f] sm:text-6xl lg:text-7xl"
             style={{ fontFamily: "'Newsreader', Georgia, serif" }}
           >
             Our Story
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#6d5a48] sm:text-base lg:text-[1.05rem]">
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-[#6d5a48] sm:text-base lg:text-[1.05rem]"
+          >
             We preserve Indian artisanship by bringing handmade heritage into a
             contemporary light, so every thread, carving, and painted surface
             continues to be valued as living culture.
-          </p>
+          </motion.p>
         </div>
 
+        {/* 3D Orbit Carousel */}
         <div className="relative w-full max-w-[1200px]">
           <div className="pointer-events-none absolute inset-x-6 top-14 h-[74%] rounded-full bg-[radial-gradient(ellipse_at_center,rgba(164,117,57,0.22)_0%,rgba(164,117,57,0.12)_30%,rgba(164,117,57,0.03)_58%,transparent_78%)] blur-3xl sm:inset-x-16" />
           <div className="pointer-events-none absolute inset-x-16 top-28 h-44 rounded-full bg-[radial-gradient(circle_at_center,rgba(255,237,196,0.48)_0%,rgba(255,237,196,0.12)_28%,transparent_72%)] blur-2xl" />

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useApp } from '../../context/AppContext'
+import RoleGuard from '../../components/RoleGuard'
 import { apiRequest } from '../../lib/api'
 import { useRouter } from 'next/navigation'
 
@@ -11,7 +12,7 @@ const s = {
   primary: '#9f402d',
 }
 
-export default function Wishlist() {
+function WishlistContent() {
   const { wishlist, toggleWishlist, addToCart, darkMode, user } = useApp()
   const router = useRouter()
   const [products, setProducts] = useState<any[]>([])
@@ -19,8 +20,8 @@ export default function Wishlist() {
 
   // Redirect sellers to dashboard
   useEffect(() => {
-    if (user && user.role === 'seller') {
-      router.push('/dashboard')
+    if (user && user.role === 'artisan') {
+      router.push('/artisans')
     }
   }, [user, router])
 
@@ -98,4 +99,8 @@ export default function Wishlist() {
       )}
     </div>
   )
+}
+
+export default function Wishlist() {
+  return <RoleGuard role="buyer"><WishlistContent /></RoleGuard>
 }

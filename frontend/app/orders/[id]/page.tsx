@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { apiRequest } from '../../../lib/api'
 import { useApp } from '../../../context/AppContext'
+import RoleGuard from '../../../components/RoleGuard'
 
 const C = {
   serif: "'Newsreader', Georgia, serif",
@@ -17,7 +18,7 @@ const C = {
   muted: '#6b6560',
 }
 
-export default function OrderConfirmation() {
+function OrderConfirmationContent() {
   const { id } = useParams()
   const { darkMode } = useApp()
   const [order, setOrder] = useState<any>(null)
@@ -141,4 +142,8 @@ export default function OrderConfirmation() {
       </div>
     </div>
   )
+}
+
+export default function OrderConfirmation() {
+  return <RoleGuard role="buyer"><OrderConfirmationContent /></RoleGuard>
 }
